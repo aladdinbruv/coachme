@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -15,21 +16,77 @@ import {
   Video,
   Zap,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { InlineWidget } from "react-calendly";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import { useAuth } from "../../lib/AuthContext";
+import { API_URL } from "../../lib/config";
 import { MuiProvider } from "../../lib/mui";
 
 export default function BookingPage() {
+  const { token, user, openLoginModal } = useAuth();
+  const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [bookingDate, setBookingDate] = useState("");
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSelect = (id: string) => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
     setSelectedProduct(id);
+    setError("");
+    setSuccess(false);
   };
 
   const handleBack = () => {
     setSelectedProduct(null);
+    setBookingDate("");
+    setNotes("");
+    setError("");
+    setSuccess(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+
+    if (!bookingDate) {
+      setError("Veuillez sélectionner une date");
+      return;
+    }
+
+    try {
+      const currentProduct = products.find((p) => p.id === selectedProduct);
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          bookingDate,
+          notes: `Produit: ${currentProduct?.title}. ${notes}`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la réservation");
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        handleBack();
+        router.push("/dashboard");
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || "Une erreur est survenue");
+    }
   };
 
   const products = [
@@ -409,22 +466,85 @@ export default function BookingPage() {
                           </Typography>
                         </Box>
 
-                        <Box sx={{ flex: 1, overflow: "hidden" }}>
-                          <InlineWidget
-                            url={currentProduct?.calendlyUrl || ""}
-                            styles={{
-                              height: "100%",
-                              width: "100%",
-                              minHeight: "700px",
-                            }}
-                            pageSettings={{
-                              backgroundColor: "ffffff",
-                              hideEventTypeDetails: false,
-                              hideLandingPageDetails: false,
-                              primaryColor: "0f4c5c",
-                              textColor: "2b2d42",
-                            }}
-                          />
+                        <Box
+                          sx={{
+                            p: 4,
+                            maxWidth: 600,
+                            mx: "auto",
+                            width: "100%",
+                          }}
+                        >
+                          {success ? (
+                            <Box sx={{ textAlign: "center", py: 4 }}>
+                              <CheckCircle
+                                size={64}
+                                color="#2e7d32"
+                                style={{ marginBottom: 16 }}
+                              />
+                              <Typography
+                                variant="h5"
+                                gutterBottom
+                                color="success.main"
+                              >
+                                Réservation confirmée !
+                              </Typography>
+                              <Typography color="text.secondary">
+                                Vous allez être redirigé vers votre tableau de
+                                bord...
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Box component="form" onSubmit={handleSubmit}>
+                              <Typography variant="h6" gutterBottom>
+                                Choisissez votre créneau
+                              </Typography>
+
+                              {error && (
+                                <Typography color="error" sx={{ mb: 2 }}>
+                                  {error}
+                                </Typography>
+                              )}
+
+                              <TextField
+                                fullWidth
+                                type="datetime-local"
+                                label="Date et Heure"
+                                value={bookingDate}
+                                onChange={(e) => setBookingDate(e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                sx={{ mb: 3 }}
+                                required
+                              />
+
+                              <TextField
+                                fullWidth
+                                multiline
+                                rows={4}
+                                label="Notes / Attentes particulières"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                sx={{ mb: 4 }}
+                                placeholder="Décrivez brièvement votre besoin..."
+                              />
+
+                              <Button
+                                fullWidth
+                                variant="contained"
+                                size="large"
+                                type="submit"
+                                sx={{
+                                  py: 1.5,
+                                  bgcolor: currentProduct?.color,
+                                  "&:hover": {
+                                    bgcolor: currentProduct?.color,
+                                    filter: "brightness(0.9)",
+                                  },
+                                }}
+                              >
+                                Confirmer la réservation
+                              </Button>
+                            </Box>
+                          )}
                         </Box>
                       </motion.div>
                     )}

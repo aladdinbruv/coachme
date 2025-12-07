@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { MuiProvider } from "../../lib/mui";
@@ -29,6 +30,7 @@ export default function SolutionsPage() {
       action: "En savoir plus",
       icon: <Compass size={40} />,
       primary: true,
+      link: "/contact",
     },
     {
       title: "Bilan de Compétences",
@@ -37,6 +39,7 @@ export default function SolutionsPage() {
       action: "Découvrir",
       icon: <ClipboardCheck size={40} />,
       primary: false,
+      link: "/formations",
     },
     {
       title: "Coaching en Entreprise",
@@ -45,6 +48,7 @@ export default function SolutionsPage() {
       action: "Offre Entreprise",
       icon: <Users size={40} />,
       primary: false,
+      link: "/contact",
     },
   ];
 
@@ -52,7 +56,7 @@ export default function SolutionsPage() {
     {
       title: "Gagner en Clarté",
       description:
-        "Clarifiez vos objectifs et définissez une vision précise de votre avenir professionnel.",
+        "Clarifiez vos objectifs et définissez une vision précise de votre avenir personnel et professionnel.",
       icon: <Target size={32} />,
     },
     {
@@ -66,6 +70,12 @@ export default function SolutionsPage() {
       description:
         "Atteignez vos résultats plus rapidement grâce à des stratégies éprouvées.",
       icon: <TrendingUp size={32} />,
+    },
+    {
+      title: "Refaites connaissances avec vos vrais ressources",
+      description:
+        "Explorez vos ressources en veilleuse, osez de nouvelles orientations.",
+      icon: <Compass size={32} />,
     },
   ];
 
@@ -213,22 +223,28 @@ export default function SolutionsPage() {
                       </Typography>
                     </CardContent>
                     <Box sx={{ p: 4, pt: 0 }}>
-                      <Button
-                        variant={sol.primary ? "contained" : "outlined"}
-                        fullWidth
-                        size="large"
-                        endIcon={<ArrowRight size={18} />}
-                        sx={{
-                          py: 1.5,
-                          borderRadius: 50,
-                          borderWidth: 2,
-                          "&:hover": {
-                            borderWidth: 2,
-                          },
-                        }}
+                      <Link
+                        href={sol.link}
+                        passHref
+                        style={{ textDecoration: "none" }}
                       >
-                        {sol.action}
-                      </Button>
+                        <Button
+                          variant={sol.primary ? "contained" : "outlined"}
+                          fullWidth
+                          size="large"
+                          endIcon={<ArrowRight size={18} />}
+                          sx={{
+                            py: 1.5,
+                            borderRadius: 50,
+                            borderWidth: 2,
+                            "&:hover": {
+                              borderWidth: 2,
+                            },
+                          }}
+                        >
+                          {sol.action}
+                        </Button>
+                      </Link>
                     </Box>
                   </Card>
                 </motion.div>
@@ -286,6 +302,55 @@ export default function SolutionsPage() {
                 </Grid>
               ))}
             </Grid>
+          </Container>
+        </Box>
+
+        {/* CTA Section */}
+        <Box sx={{ bgcolor: "primary.main", color: "white", py: 12 }}>
+          <Container maxWidth="md" sx={{ textAlign: "center" }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <Typography
+                variant="h3"
+                component="h2"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ fontFamily: "Playfair Display, serif" }}
+              >
+                Prêt à transformer votre avenir ?
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ mb: 4, opacity: 0.9, fontWeight: 300 }}
+              >
+                Contactez-nous dès aujourd'hui pour discuter de vos besoins et
+                trouver la solution qui vous correspond.
+              </Typography>
+              <Link href="/contact" passHref style={{ textDecoration: "none" }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: "white",
+                    color: "primary.main",
+                    px: 6,
+                    py: 2,
+                    borderRadius: 50,
+                    fontSize: "1.1rem",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      bgcolor: "grey.100",
+                    },
+                  }}
+                >
+                  Prendre Rendez-vous
+                </Button>
+              </Link>
+            </motion.div>
           </Container>
         </Box>
       </main>

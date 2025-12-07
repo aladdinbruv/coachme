@@ -6,9 +6,34 @@ import Typography from "@mui/material/Typography";
 import { motion } from "framer-motion";
 import { ArrowRight, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { useAuth } from "../../lib/AuthContext";
 import { MuiProvider } from "../../lib/mui";
 
 export default function RegisterPage() {
+  const { register } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    try {
+      await register(name, email, password);
+    } catch (err: any) {
+      setError(err.message || "Une erreur est survenue lors de l'inscription");
+    }
+  };
+
   return (
     <MuiProvider>
       <Box
@@ -143,8 +168,14 @@ export default function RegisterPage() {
 
               <Box
                 component="form"
+                onSubmit={handleSubmit}
                 sx={{ display: "flex", flexDirection: "column", gap: 3 }}
               >
+                {error && (
+                  <Typography color="error" variant="body2">
+                    {error}
+                  </Typography>
+                )}
                 <Box>
                   <Typography
                     variant="subtitle2"
@@ -157,6 +188,8 @@ export default function RegisterPage() {
                     fullWidth
                     placeholder="Jean Dupont"
                     variant="outlined"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -186,6 +219,8 @@ export default function RegisterPage() {
                     fullWidth
                     placeholder="exemple@email.com"
                     variant="outlined"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -216,6 +251,8 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="••••••••"
                     variant="outlined"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -246,6 +283,8 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="••••••••"
                     variant="outlined"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -265,6 +304,7 @@ export default function RegisterPage() {
 
                 <Button
                   fullWidth
+                  type="submit"
                   variant="contained"
                   size="large"
                   sx={{

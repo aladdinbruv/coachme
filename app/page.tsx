@@ -95,7 +95,7 @@ export default function Home() {
                     letterSpacing={2}
                     sx={{ mb: 2, display: "block" }}
                   >
-                    COACHING & BILAN DE COMPÉTENCES
+                    – COACHING - FORMATION- CONSEIL
                   </Typography>
                   <Typography
                     variant="h1"
@@ -145,7 +145,7 @@ export default function Home() {
                       endIcon={<ArrowRight />}
                       sx={{ px: 3, py: 2, fontSize: "1.1rem" }}
                     >
-                      Découvrir l&apos;approche
+                      Dècouvrez notre approche
                     </Button>
                   </Box>
                 </motion.div>
@@ -267,7 +267,7 @@ export default function Home() {
                 gutterBottom
                 sx={{ mb: 2, fontWeight: "bold" }}
               >
-                Vous méritez de vous épanouir
+                S&apos;eppanuir est un droit individuel pas un merite
               </Typography>
               <Typography
                 variant="h6"
@@ -538,7 +538,8 @@ export default function Home() {
                   >
                     Je suis [Votre Nom], coach professionnel certifié.
                     J&apos;accompagne celles et ceux qui souhaitent retrouver
-                    équilibre et sérénité dans leur vie professionnelle.
+                    équilibre et sérénité dans leur vie personnelle et
+                    professionnelle.
                   </Typography>
                   <Typography
                     fontStyle="italic"

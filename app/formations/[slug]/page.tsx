@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
+import { API_URL } from "../../../lib/config";
 import CourseDetailClient from "./CourseDetailClient";
 
 async function getCourse(slug: string) {
   try {
-    const res = await fetch(`http://localhost:4000/api/courses/${slug}`, {
+    const res = await fetch(`${API_URL}/api/courses/${slug}`, {
       cache: "no-store", // Ensure fresh data
     });
 

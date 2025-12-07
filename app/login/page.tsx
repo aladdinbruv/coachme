@@ -8,9 +8,30 @@ import Typography from "@mui/material/Typography";
 import { motion } from "framer-motion";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuth } from "../../lib/AuthContext";
 import { MuiProvider } from "../../lib/mui";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await login(email, password);
+      router.push("/"); // Redirect to home or dashboard
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
     <MuiProvider>
       <Box
@@ -145,8 +166,14 @@ export default function LoginPage() {
 
               <Box
                 component="form"
+                onSubmit={handleSubmit}
                 sx={{ display: "flex", flexDirection: "column", gap: 3 }}
               >
+                {error && (
+                  <Typography color="error" variant="body2">
+                    {error}
+                  </Typography>
+                )}
                 <Box>
                   <Typography
                     variant="subtitle2"
@@ -159,6 +186,8 @@ export default function LoginPage() {
                     fullWidth
                     placeholder="exemple@email.com"
                     variant="outlined"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -189,6 +218,8 @@ export default function LoginPage() {
                     type="password"
                     placeholder="••••••••"
                     variant="outlined"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -237,6 +268,7 @@ export default function LoginPage() {
 
                 <Button
                   fullWidth
+                  type="submit"
                   variant="contained"
                   size="large"
                   sx={{
@@ -249,7 +281,7 @@ export default function LoginPage() {
                     boxShadow: "0 10px 30px rgba(15, 76, 92, 0.2)",
                   }}
                 >
-                  <span>Se connecter</span>
+                  Se connecter
                   <ArrowRight size={20} />
                 </Button>
 

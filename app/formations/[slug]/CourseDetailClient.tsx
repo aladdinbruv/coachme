@@ -24,6 +24,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import Footer from "../../../components/Footer";
 import Header from "../../../components/Header";
+import { useAuth } from "../../../lib/AuthContext";
 import { MuiProvider } from "../../../lib/mui";
 
 // --- Components ---
@@ -191,7 +192,17 @@ const iconMap: any = {
 };
 
 export default function CourseDetailClient({ course }: { course: any }) {
+  const { user, openLoginModal } = useAuth();
   if (!course) return null;
+
+  const handleEnroll = () => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+    // TODO: Implement enrollment/payment logic
+    alert("Redirection vers le paiement...");
+  };
 
   return (
     <MuiProvider>
@@ -285,7 +296,7 @@ export default function CourseDetailClient({ course }: { course: any }) {
                   </Box>
 
                   <Box sx={{ display: { xs: "block", md: "none" } }}>
-                    <ShinyButton fullWidth>
+                    <ShinyButton fullWidth onClick={handleEnroll}>
                       Rejoindre la Masterclass
                     </ShinyButton>
                   </Box>
@@ -597,7 +608,9 @@ export default function CourseDetailClient({ course }: { course: any }) {
                   </Box>
 
                   <Box sx={{ mb: 4 }}>
-                    <ShinyButton fullWidth>Accéder à la formation</ShinyButton>
+                    <ShinyButton fullWidth onClick={handleEnroll}>
+                      Accéder à la formation
+                    </ShinyButton>
                     <Typography
                       variant="caption"
                       align="center"

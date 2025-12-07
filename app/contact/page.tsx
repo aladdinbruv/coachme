@@ -10,14 +10,42 @@ import { Check, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import { API_URL } from "../../lib/config";
 import { MuiProvider } from "../../lib/mui";
 
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`,
+          email,
+          message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'envoi du message");
+      }
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      setError(err.message || "Une erreur est survenue");
+    }
   };
 
   const containerVariants: Variants = {
@@ -210,12 +238,19 @@ export default function ContactPage() {
                             exit={{ opacity: 0, y: -20 }}
                             onSubmit={handleSubmit}
                           >
+                            {error && (
+                              <Typography color="error" sx={{ mb: 2 }}>
+                                {error}
+                              </Typography>
+                            )}
                             <Grid container spacing={3}>
                               <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
                                   fullWidth
                                   label="Prénom"
                                   variant="outlined"
+                                  value={firstName}
+                                  onChange={(e) => setFirstName(e.target.value)}
                                   sx={{
                                     "& .MuiOutlinedInput-root": {
                                       borderRadius: 2,
@@ -232,6 +267,8 @@ export default function ContactPage() {
                                   fullWidth
                                   label="Nom"
                                   variant="outlined"
+                                  value={lastName}
+                                  onChange={(e) => setLastName(e.target.value)}
                                   sx={{
                                     "& .MuiOutlinedInput-root": {
                                       borderRadius: 2,
@@ -249,6 +286,8 @@ export default function ContactPage() {
                                   label="Email"
                                   type="email"
                                   variant="outlined"
+                                  value={email}
+                                  onChange={(e) => setEmail(e.target.value)}
                                   sx={{
                                     "& .MuiOutlinedInput-root": {
                                       borderRadius: 2,
@@ -267,6 +306,8 @@ export default function ContactPage() {
                                   multiline
                                   rows={4}
                                   variant="outlined"
+                                  value={message}
+                                  onChange={(e) => setMessage(e.target.value)}
                                   sx={{
                                     "& .MuiOutlinedInput-root": {
                                       borderRadius: 2,
